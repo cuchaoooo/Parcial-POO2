@@ -7,7 +7,7 @@ import java.io.*;
 public class PaginaInicio extends JFrame {
 
     public PaginaInicio() {
-        setTitle("Página de Prueba");
+        setTitle("Página de Entrada");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 300);
 
