@@ -1,9 +1,0 @@
-manuel,123
-navas,124
-daniel,125
-ale,098
-elsanti,345
-elsanti,345
-jorge,
-jorge,123
-jorge,123
