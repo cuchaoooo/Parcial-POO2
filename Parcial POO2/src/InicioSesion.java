@@ -51,8 +51,8 @@ class InicioSesion extends JFrame {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.insets = new Insets(30, 10, 10, 10);
-        loginPanel.add(loginTitleLabel, gbc);
+        gbc.insets = new Insets(30, 10, 10, 10); // Ajustar el margen superior del título
+        loginPanel.add(loginTitleLabel, gbc); // Agregando el título al panel de inicio de sesión
         gbc.gridy++;
         loginPanel.add(emailField, gbc);
         gbc.gridy++;
