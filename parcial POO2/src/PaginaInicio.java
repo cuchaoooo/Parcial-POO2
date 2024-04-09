@@ -12,19 +12,16 @@ public class PaginaInicio extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 300);
 
-        mostrarInicioSesion(); // Mostrar la ventana de inicio de sesión al inicio
+        mostrarInicioSesion();
     }
-
     private void mostrarInicioSesion() {
         inicioSesion = new InicioSesion();
         inicioSesion.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Verificar si el inicio de sesión es exitoso
                 if (inicioSesion.esInicioSesionExitoso()) {
-                    // Si es exitoso, cerrar la ventana de inicio de sesión y mostrar la página de inicio
-                    inicioSesion.dispose(); // Cerrar la ventana de inicio de sesión
-                    mostrarPaginaInicio(); // Mostrar la página de inicio
+                    inicioSesion.dispose();
+                    mostrarPaginaInicio();
                 }
             }
         });
