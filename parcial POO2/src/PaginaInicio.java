@@ -14,6 +14,7 @@ public class PaginaInicio extends JFrame {
 
         mostrarInicioSesion();
     }
+
     private void mostrarInicioSesion() {
         inicioSesion = new InicioSesion();
         inicioSesion.addActionListener(new ActionListener() {
@@ -72,6 +73,15 @@ public class PaginaInicio extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Registros registros = new Registros();
+                registros.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (registros.esRegistroExitoso()) {
+                            registros.dispose();
+                            mostrarPaginaInicio();
+                        }
+                    }
+                });
                 registros.setVisible(true);
             }
         });
@@ -108,6 +118,8 @@ public class PaginaInicio extends JFrame {
 class Registros extends JFrame {
     private JTextField emailField;
     private JPasswordField passwordField;
+    private boolean registroExitoso;
+    private ActionListener actionListener;
 
     public Registros() {
         setTitle("Registro");
@@ -145,7 +157,11 @@ class Registros extends JFrame {
                 String email = emailField.getText();
                 String password = new String(passwordField.getPassword());
                 guardarEnArchivo(email + "," + password, "UsuarioSyC.txt");
+                registroExitoso = true;
                 JOptionPane.showMessageDialog(Registros.this, "Datos guardados con éxito");
+                if (actionListener != null) {
+                    actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
+                }
             }
         });
 
@@ -194,6 +210,14 @@ class Registros extends JFrame {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean esRegistroExitoso() {
+        return registroExitoso;
+    }
+
+    public void addActionListener(ActionListener listener) {
+        actionListener = listener;
     }
 }
 
