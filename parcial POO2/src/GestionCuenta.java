@@ -16,12 +16,10 @@ public class GestionCuenta extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(600,600);
 
-        //Se coloca un limite invisible en mitad de la ventana para poder tener los implementos de cambiar usuario y contraseña en el otro lado
         setLayout(new BorderLayout());
         JPanel panelPerfil = new JPanel();
         panelPerfil.setLayout(new BorderLayout());
 
-        //Se define la foto por defecto desde el principio
         lblFotodePerfil= new JLabel(new ImageIcon("DEFAULT_PROFILE_IMAGES/img.png"));
         lblFotodePerfil.setHorizontalAlignment(JLabel.CENTER);
         lblFotodePerfil.setVerticalAlignment(JLabel.CENTER);
@@ -31,8 +29,6 @@ public class GestionCuenta extends JFrame {
         btnActualizarFoto.setForeground(Color.WHITE);
         btnActualizarFoto.setFont(new Font("Poppins",Font.BOLD,16));
 
-        /* Se crea un ActionListener para que pueda cargar la imagen y ademas esta misma se ajuste a las dimensiones de la
-        foto por default*/
         btnActualizarFoto.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -56,7 +52,6 @@ public class GestionCuenta extends JFrame {
 
                         lblFotodePerfil.setIcon(new ImageIcon(imagen));
 
-                        //lblFotodePerfil.setIcon(new ImageIcon(imagen));. NOTA: Este fue el primer metodo para cargar la imagen pero mantenia las dimensiones originales de la imagen cargada
                     }catch (IOException ex){
                         ex.printStackTrace();
                     }
@@ -70,7 +65,6 @@ public class GestionCuenta extends JFrame {
         btnQuitarFoto.setForeground(Color.WHITE);
         btnQuitarFoto.setFont(new Font("Poppins",Font.BOLD,16));
 
-        //Metodo para eliminar imagen y regresar a la foto original
         btnQuitarFoto.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

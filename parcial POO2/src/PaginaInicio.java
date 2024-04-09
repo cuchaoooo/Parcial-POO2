@@ -41,6 +41,12 @@ public class PaginaInicio extends JFrame {
         registrarButton.setForeground(Color.WHITE);
         registrarButton.setFont(new Font("Poppins", Font.BOLD, 16));
 
+        JButton gestionCuentaButton = new JButton("Gestionar");
+        gestionCuentaButton.setPreferredSize(new Dimension(150, 50));
+        gestionCuentaButton.setBackground(new Color(0, 204, 118));
+        gestionCuentaButton.setForeground(Color.WHITE);
+        gestionCuentaButton.setFont(new Font("Poppins", Font.BOLD, 16));
+
         JButton listarUsuariosButton = new JButton("Listar Usuarios");
         listarUsuariosButton.setPreferredSize(new Dimension(150, 50));
         listarUsuariosButton.setBackground(new Color(0, 204, 118));
@@ -50,6 +56,7 @@ public class PaginaInicio extends JFrame {
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 20));
         buttonsPanel.add(registrarButton);
+        buttonsPanel.add(gestionCuentaButton);
         buttonsPanel.add(listarUsuariosButton);
 
         JPanel backgroundPanel = new JPanel() {
@@ -86,6 +93,16 @@ public class PaginaInicio extends JFrame {
             }
         });
 
+        gestionCuentaButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Crear una instancia de la clase GestionCuenta
+                GestionCuenta gestionCuenta = new GestionCuenta();
+                // Hacer visible la ventana de gestión de cuenta
+                gestionCuenta.setVisible(true);
+            }
+        });
+
         listarUsuariosButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -114,6 +131,7 @@ public class PaginaInicio extends JFrame {
         SwingUtilities.invokeLater(PaginaInicio::new);
     }
 }
+
 
 class Registros extends JFrame {
     private JTextField emailField;
