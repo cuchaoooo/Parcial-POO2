@@ -6,8 +6,20 @@ import java.io.*;
 
 public class PaginaInicio extends JFrame {
     private InicioSesion inicioSesion;
+    private String usuario;
+    private String contrasena;
 
-    public PaginaInicio() {
+    public String getUsuario() {
+        return usuario;
+    }
+    public String getContrasena() {
+        return contrasena;
+    }
+
+
+    public PaginaInicio(String usuario, String contrasena) {
+        this.usuario = usuario;
+        this.contrasena = contrasena;
         setTitle("Página de Inicio");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 300);
@@ -21,15 +33,17 @@ public class PaginaInicio extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (inicioSesion.esInicioSesionExitoso()) {
+                    String usuario = inicioSesion.getUsuario();
+                    String contrasena = inicioSesion.getContrasena();
                     inicioSesion.dispose();
-                    mostrarPaginaInicio();
+                    mostrarPaginaInicio(usuario,contrasena);
                 }
             }
         });
         inicioSesion.setVisible(true);
     }
 
-    private void mostrarPaginaInicio() {
+    private void mostrarPaginaInicio(String usuario,String contrasena) {
         JLabel titleLabel = new JLabel("Página de Inicio");
         titleLabel.setFont(new Font("Poppins", Font.BOLD, 30));
         titleLabel.setForeground(new Color(0, 0, 0));
@@ -85,7 +99,7 @@ public class PaginaInicio extends JFrame {
                     public void actionPerformed(ActionEvent e) {
                         if (registros.esRegistroExitoso()) {
                             registros.dispose();
-                            mostrarPaginaInicio();
+                            mostrarPaginaInicio(usuario, contrasena);
                         }
                     }
                 });
@@ -97,7 +111,7 @@ public class PaginaInicio extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Crear una instancia de la clase GestionCuenta
-                GestionCuenta gestionCuenta = new GestionCuenta();
+                GestionCuenta gestionCuenta = new GestionCuenta(usuario, contrasena);
                 // Hacer visible la ventana de gestión de cuenta
                 gestionCuenta.setVisible(true);
             }
@@ -128,7 +142,11 @@ public class PaginaInicio extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(PaginaInicio::new);
+        String usuario = "usuario_obtenido_del_formulario";
+        String contrasena = "contrasena_obtenida_del_formulario";
+        SwingUtilities.invokeLater(() -> {
+            PaginaInicio paginaInicio = new PaginaInicio(usuario,contrasena);
+        });
     }
 }
 
@@ -161,9 +179,6 @@ class Registros extends JFrame {
         passwordField.setBackground(new Color(255, 255, 255));
         passwordField.setFont(new Font("Poppins", Font.PLAIN, 16));
 
-        JLabel forgotPasswordLabel = new JLabel("¿Olvidaste la contraseña?");
-        forgotPasswordLabel.setFont(new Font("Poppins", Font.PLAIN, 16));
-
         JButton loginButton = new JButton("Registrar");
         loginButton.setPreferredSize(new Dimension(312, 62));
         loginButton.setBackground(new Color(0, 204, 118));
@@ -183,10 +198,6 @@ class Registros extends JFrame {
             }
         });
 
-        JLabel createAccountLabel = new JLabel("Crear Cuenta");
-        createAccountLabel.setFont(new Font("Poppins", Font.PLAIN, 18));
-        createAccountLabel.setForeground(new Color(83, 83, 83));
-
         JPanel loginPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -198,11 +209,8 @@ class Registros extends JFrame {
         gbc.gridy++;
         loginPanel.add(passwordField, gbc);
         gbc.gridy++;
-        loginPanel.add(forgotPasswordLabel, gbc);
-        gbc.gridy++;
         loginPanel.add(loginButton, gbc);
         gbc.gridy++;
-        loginPanel.add(createAccountLabel, gbc);
 
         JPanel backgroundPanel = new JPanel() {
             @Override
@@ -244,6 +252,25 @@ class InicioSesion extends JFrame {
     private JPasswordField passwordField;
     private boolean inicioSesionExitoso;
     private ActionListener actionListener;
+
+    private static String usuario;
+    private static String contrasena;
+
+    public static String getUsuario() {
+        return usuario;
+    }
+
+    public static String getContrasena() {
+        return contrasena;
+    }
+    public String getUsuarioFromTextField() {
+        return emailField.getText();
+    }
+
+    public String getContrasenaFromPasswordField() {
+        return new String(passwordField.getPassword());
+    }
+
 
     public InicioSesion() {
         setTitle("Inicio de Sesión");
@@ -341,8 +368,13 @@ class InicioSesion extends JFrame {
     }
 
     public boolean esInicioSesionExitoso() {
+        if (inicioSesionExitoso) {
+            usuario = getUsuarioFromTextField();
+            contrasena = getContrasenaFromPasswordField();
+        }
         return inicioSesionExitoso;
     }
+
 
     public void addActionListener(ActionListener listener) {
         actionListener = listener;
