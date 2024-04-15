@@ -110,9 +110,7 @@ public class PaginaInicio extends JFrame {
         gestionCuentaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Crear una instancia de la clase GestionCuenta
                 GestionCuenta gestionCuenta = new GestionCuenta(usuario, contrasena);
-                // Hacer visible la ventana de gestión de cuenta
                 gestionCuenta.setVisible(true);
             }
         });
