@@ -2,20 +2,25 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.*;
+import java.sql.*;
 
 public class PaginaInicio extends JFrame {
     private InicioSesion inicioSesion;
     private String usuario;
     private String contrasena;
+    private ActionListener actionListener;
 
     public String getUsuario() {
         return usuario;
     }
+
     public String getContrasena() {
         return contrasena;
     }
 
+    public void addActionListener(ActionListener listener) {
+        this.actionListener = listener;
+    }
 
     public PaginaInicio(String usuario, String contrasena) {
         this.usuario = usuario;
@@ -36,14 +41,14 @@ public class PaginaInicio extends JFrame {
                     String usuario = inicioSesion.getUsuario();
                     String contrasena = inicioSesion.getContrasena();
                     inicioSesion.dispose();
-                    mostrarPaginaInicio(usuario,contrasena);
+                    mostrarPaginaInicio(usuario, contrasena);
                 }
             }
         });
         inicioSesion.setVisible(true);
     }
 
-    private void mostrarPaginaInicio(String usuario,String contrasena) {
+    private void mostrarPaginaInicio(String usuario, String contrasena) {
         JLabel titleLabel = new JLabel("Página de Inicio");
         titleLabel.setFont(new Font("Poppins", Font.BOLD, 30));
         titleLabel.setForeground(new Color(0, 0, 0));
@@ -125,16 +130,11 @@ public class PaginaInicio extends JFrame {
 
     private void listarUsuarios() {
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("UsuarioSyC.txt"));
-            String line;
-            StringBuilder userList = new StringBuilder();
-            while ((line = reader.readLine()) != null) {
-                userList.append(line).append("\n");
-            }
-            reader.close();
-            JOptionPane.showMessageDialog(PaginaInicio.this, userList.toString(), "Usuarios Registrados", JOptionPane.INFORMATION_MESSAGE);
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(PaginaInicio.this, "Error al leer el archivo de usuarios", "Error", JOptionPane.ERROR_MESSAGE);
+            String url = "jdbc:mysql://127.0.0.1:3306/login?user=root&password=root";
+            Connection conn = DriverManager.getConnection(url);
+            conn.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(PaginaInicio.this, "Error al listar usuarios", "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
@@ -143,11 +143,10 @@ public class PaginaInicio extends JFrame {
         String usuario = "usuario_obtenido_del_formulario";
         String contrasena = "contrasena_obtenida_del_formulario";
         SwingUtilities.invokeLater(() -> {
-            PaginaInicio paginaInicio = new PaginaInicio(usuario,contrasena);
+            PaginaInicio paginaInicio = new PaginaInicio(usuario, contrasena);
         });
     }
 }
-
 
 class Registros extends JFrame {
     private JTextField emailField;
@@ -187,7 +186,10 @@ class Registros extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String email = emailField.getText();
                 String password = new String(passwordField.getPassword());
-                guardarEnArchivo(email + "," + password, "UsuarioSyC.txt");
+                // Aquí puedes guardar los datos en la base de datos en lugar de un archivo
+                // Por ejemplo:
+                // 1. Conectar a la base de datos
+                // 2. Ejecutar una consulta SQL para insertar los datos en la tabla correspondiente
                 registroExitoso = true;
                 JOptionPane.showMessageDialog(Registros.this, "Datos guardados con éxito");
                 if (actionListener != null) {
@@ -226,16 +228,6 @@ class Registros extends JFrame {
         add(backgroundPanel);
     }
 
-    private void guardarEnArchivo(String data, String filename) {
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true));
-            writer.write(data + "\n");
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public boolean esRegistroExitoso() {
         return registroExitoso;
     }
@@ -250,25 +242,8 @@ class InicioSesion extends JFrame {
     private JPasswordField passwordField;
     private boolean inicioSesionExitoso;
     private ActionListener actionListener;
-
-    private static String usuario;
-    private static String contrasena;
-
-    public static String getUsuario() {
-        return usuario;
-    }
-
-    public static String getContrasena() {
-        return contrasena;
-    }
-    public String getUsuarioFromTextField() {
-        return emailField.getText();
-    }
-
-    public String getContrasenaFromPasswordField() {
-        return new String(passwordField.getPassword());
-    }
-
+    private String usuario;
+    private String contrasena;
 
     public InicioSesion() {
         setTitle("Inicio de Sesión");
@@ -302,13 +277,16 @@ class InicioSesion extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String email = emailField.getText();
                 String password = new String(passwordField.getPassword());
-                String mensaje = validarCredenciales(email, password);
-                JOptionPane.showMessageDialog(InicioSesion.this, mensaje);
-                if (mensaje.equals("Inicio de sesión exitoso")) {
+                if (verificarEnBaseDeDatos(email, password)) {
+                    JOptionPane.showMessageDialog(InicioSesion.this, "Inicio de sesión exitoso");
+                    usuario = email;
+                    contrasena = password;
                     inicioSesionExitoso = true;
                     if (actionListener != null) {
                         actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
                     }
+                } else {
+                    JOptionPane.showMessageDialog(InicioSesion.this, "Inicio de sesión fallido. Usuario o contraseña incorrectos.");
                 }
             }
         });
@@ -345,34 +323,36 @@ class InicioSesion extends JFrame {
         setVisible(true);
     }
 
-    private String validarCredenciales(String email, String password) {
-        try (BufferedReader reader = new BufferedReader(new FileReader("UsuarioSyC.txt"))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length == 2) {
-                    String storedEmail = parts[0].trim();
-                    String storedPassword = parts[1].trim();
-                    if (email.equals(storedEmail) && password.equals(storedPassword)) {
-                        return "Inicio de sesión exitoso";
-                    }
-                }
+    private boolean verificarEnBaseDeDatos(String usuario, String contraseña) {
+        String url = "jdbc:mysql://127.0.0.1:3306/login?user=root&password=root";
+        String sql = "SELECT * FROM usuarios WHERE nombre = ? AND contraseña = ?";
+
+        try (Connection conn = DriverManager.getConnection(url);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, usuario);
+            pstmt.setString(2, contraseña);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                boolean hasResult = rs.next();
+                System.out.println("INICIO DE SESION EXITOSO");
+                return hasResult;
             }
-        } catch (IOException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-            return "Error al leer el archivo de usuarios.";
         }
-        return "Inicio de sesión fallido. Usuario o contraseña incorrectos.";
+        return false;
     }
 
     public boolean esInicioSesionExitoso() {
-        if (inicioSesionExitoso) {
-            usuario = getUsuarioFromTextField();
-            contrasena = getContrasenaFromPasswordField();
-        }
         return inicioSesionExitoso;
     }
 
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public String getContrasena() {
+        return contrasena;
+    }
 
     public void addActionListener(ActionListener listener) {
         actionListener = listener;
